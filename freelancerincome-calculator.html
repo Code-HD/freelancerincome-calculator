@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프리랜서 수입 계산기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            font-size: 2.25rem; /* 36px */
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.125rem; /* 18px */
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.125rem; /* 18px */
+            color: #333;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #6366f1; /* Indigo 500 */
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        .result-table th, .result-table td {
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+            font-size: 1.125rem; /* 18px */
+        }
+        .result-table th {
+            background-color: #f8f8f8;
+            font-weight: 600;
+            color: #444;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .result-table tr:last-child td {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        .result-table td {
+            background-color: #ffffff;
+            color: #333;
+        }
+        .result-table tr:nth-child(even) td {
+            background-color: #f9fafb;
+        }
+        .result-table tr:hover td {
+            background-color: #f0f2f5;
+        }
+        .note {
+            margin-top: 25px;
+            font-size: 0.9rem; /* 14px */
+            color: #777;
+            line-height: 1.5;
+            text-align: left;
+        }
+        .note strong {
+            color: #555;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.75rem; /* 28px */
+            }
+            label {
+                font-size: 1rem; /* 16px */
+            }
+            input[type="number"], .result-table th, .result-table td {
+                font-size: 1rem; /* 16px */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>프리랜서 수입 계산기</h1>
+        <div class="input-group">
+            <label for="weeklyIncome">주간 수입 (원):</label>
+            <input type="number" id="weeklyIncome" placeholder="주간 수입을 입력하세요" min="0">
+        </div>
+
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>항목</th>
+                    <th>계산 결과</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>시급</td>
+                    <td id="hourlyWage">0 원/시간</td>
+                </tr>
+                <tr>
+                    <td>월급</td>
+                    <td id="monthlySalary">0 원</td>
+                </tr>
+                <tr>
+                    <td>연봉</td>
+                    <td id="annualSalary">0 원</td>
+                </tr>
+                <tr>
+                    <td>월 세전 수입</td>
+                    <td id="monthlyGrossSalary">0 원</td>
+                </tr>
+                <tr>
+                    <td>**월 실수령액 (추정)**</td>
+                    <td id="netMonthlySalary">**0 원**</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <p><strong>참고:</strong></p>
+            <ul>
+                <li>시급은 주간 수입 / 52시간 (고정 근무 시간)으로 계산됩니다.</li>
+                <li>월급은 주간 수입 $\times$ 4주로 계산됩니다.</li>
+                <li>연봉은 주간 수입 $\times$ 52주로 계산됩니다.</li>
+                <li>**월 실수령액은 대략적인 추정치입니다.** 프리랜서의 경우, 실제 세금 및 4대 보험료는 개인의 소득(필요경비 제외), 재산, 부양가족 수, 실제 보험료율 등에 따라 크게 달라질 수 있습니다.</li>
+                <li>본 계산기는 2023~2024년 귀속 종합소득세율 및 2024년 기준의 일반적인 프리랜서 4대 보험(국민연금, 건강보험) 요율을 가정하여 계산합니다.</li>
+                <li>**세금(종합소득세, 지방소득세):** 연봉을 기준으로 종합소득세율을 적용하여 계산하며, 필요경비는 고려되지 않은 간소화된 방식입니다.</li>
+                <li>**4대 보험:** 국민연금(지역가입자 기준 월 소득의 9%), 건강보험(지역가입자 기준 월 소득의 약 7.09%), 장기요양보험(건강보험료의 12.95%)을 추정하여 반영합니다. 고용보험은 일반 프리랜서의 경우 의무가입 대상이 아니므로 계산에서 제외됩니다.</li>
+                <li>정확한 계산은 국세청 및 각 보험 공단의 자료를 참고하시거나 세무 전문가와 상담하시기 바랍니다.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Get elements from the DOM
+        const weeklyIncomeInput = document.getElementById('weeklyIncome');
+        const monthlySalaryDisplay = document.getElementById('monthlySalary');
+        const hourlyWageDisplay = document.getElementById('hourlyWage');
+        const annualSalaryDisplay = document.getElementById('annualSalary');
+        const monthlyGrossSalaryDisplay = document.getElementById('monthlyGrossSalary');
+        const netMonthlySalaryDisplay = document.getElementById('netMonthlySalary');
+
+        // Fixed values as per user's request
+        const WEEKS_IN_MONTH = 4;
+        const WEEKS_IN_YEAR = 52;
+        const WEEKLY_WORK_HOURS = 52; // User specified 52 hours per week
+
+        // Estimated deduction rates for Freelancers (simplified for demonstration)
+        // These rates are illustrative and may not reflect actual current rates or specific income/asset situations.
+        // For accurate calculations, consult official tax and social insurance resources.
+
+        // Social Insurance Rates (Regional Subscriber - simplified, actual rates can vary by year and specific conditions)
+        // 국민연금 지역가입자: 소득의 9% (사업소득 기준)
+        const NATIONAL_PENSION_RATE_FREELANCER = 0.09;
+        // 건강보험 지역가입자: 소득의 약 7.09% (2024년 기준, 소득/재산/자동차 등 복합 산정되므로 매우 간소화된 추정치)
+        const HEALTH_INSURANCE_RATE_FREELANCER = 0.0709;
+        // 장기요양보험: 건강보험료의 12.95%
+        const LONG_TERM_CARE_RATE = 0.1295;
+        // 고용보험: 일반 프리랜서는 의무 가입 대상 아님 (특수고용직, 예술인 등 제외)
+        const EMPLOYMENT_INSURANCE_RATE = 0; // Set to 0 for general freelancer case
+        const LOCAL_INCOME_TAX_RATE = 0.1; // 지방소득세 (소득세의 10%)
+
+        // Income Tax Brackets (2023-2024 귀속 종합소득세율 - Annual Income)
+        // Note: For freelancers, this tax is on '사업소득 - 필요경비'. Here, 'annualSalary' is used as a proxy for '사업소득'.
+        // Necessary expenses are NOT considered in this simplified calculation.
+        const TAX_BRACKETS = [
+            { threshold: 14000000, rate: 0.06, deduction: 0 },
+            { threshold: 50000000, rate: 0.15, deduction: 1260000 },
+            { threshold: 88000000, rate: 0.24, deduction: 5760000 },
+            { threshold: 150000000, rate: 0.35, deduction: 15440000 },
+            { threshold: 300000000, rate: 0.38, deduction: 19940000 },
+            { threshold: 500000000, rate: 0.40, deduction: 25940000 },
+            { threshold: 1000000000, rate: 0.42, deduction: 35940000 },
+            { threshold: Infinity, rate: 0.45, deduction: 65940000 } // Over 1,000,000,000
+        ];
+
+        // Function to calculate annual income tax based on progressive tax brackets
+        function calculateAnnualIncomeTax(annualIncome) {
+            let tax = 0;
+            for (let i = 0; i < TAX_BRACKETS.length; i++) {
+                const bracket = TAX_BRACKETS[i];
+                if (annualIncome <= bracket.threshold) {
+                    tax = annualIncome * bracket.rate - bracket.deduction;
+                    break;
+                }
+            }
+            return Math.max(0, tax); // Ensure tax is not negative
+        }
+
+        // Function to format numbers as Korean Won currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(Math.round(amount)); // Round to nearest integer
+        }
+
+        // Function to calculate and display results
+        function calculateIncome() {
+            const weeklyIncome = parseFloat(weeklyIncomeInput.value);
+
+            // Reset displays if input is invalid
+            if (isNaN(weeklyIncome) || weeklyIncome < 0) {
+                hourlyWageDisplay.textContent = '0 원/시간';
+                monthlySalaryDisplay.textContent = '0 원';
+                annualSalaryDisplay.textContent = '0 원';
+                monthlyGrossSalaryDisplay.textContent = '0 원';
+                netMonthlySalaryDisplay.textContent = '0 원';
+                return; // Exit function
+            }
+
+            // 1. Calculate Hourly Wage (시급)
+            const hourlyWage = weeklyIncome / WEEKLY_WORK_HOURS;
+            hourlyWageDisplay.textContent = formatCurrency(hourlyWage) + '/시간';
+
+            // 2. Calculate Monthly Salary (월급)
+            const monthlySalary = weeklyIncome * WEEKS_IN_MONTH;
+            monthlySalaryDisplay.textContent = formatCurrency(monthlySalary);
+
+            // 3. Calculate Annual Salary (연봉)
+            const annualSalary = weeklyIncome * WEEKS_IN_YEAR;
+            annualSalaryDisplay.textContent = formatCurrency(annualSalary);
+
+            // 4. Monthly Gross Salary (월 세전 수입) - same as monthlySalary
+            monthlyGrossSalaryDisplay.textContent = formatCurrency(monthlySalary);
+
+            // 5. Calculate Estimated Deductions for Freelancer
+            // Calculate annual income tax first (based on annualSalary as proxy for gross business income)
+            const annualIncomeTax = calculateAnnualIncomeTax(annualSalary);
+            const monthlyIncomeTax = annualIncomeTax / 12; // Convert to monthly
+
+            const monthlyLocalIncomeTax = monthlyIncomeTax * LOCAL_INCOME_TAX_RATE;
+
+            // Freelancer Social Insurances (simplified)
+            const monthlyNationalPension = monthlySalary * NATIONAL_PENSION_RATE_FREELANCER;
+            const monthlyHealthInsurance = monthlySalary * HEALTH_INSURANCE_RATE_FREELANCER;
+            const monthlyLongTermCare = monthlyHealthInsurance * LONG_TERM_CARE_RATE;
+            const monthlyEmploymentInsurance = monthlySalary * EMPLOYMENT_INSURANCE_RATE; // 0 for general freelancer
+
+            const totalMonthlyDeductions = monthlyIncomeTax + monthlyLocalIncomeTax +
+                                           monthlyNationalPension + monthlyHealthInsurance +
+                                           monthlyLongTermCare + monthlyEmploymentInsurance;
+
+            // 6. Calculate Net Monthly Salary (월 실수령액 추정)
+            const netMonthlySalary = monthlySalary - totalMonthlyDeductions;
+            netMonthlySalaryDisplay.textContent = formatCurrency(netMonthlySalary);
+        }
+
+        // Add event listener to the input field
+        weeklyIncomeInput.addEventListener('input', calculateIncome);
+
+        // Initial calculation on page load (if there's a default value)
+        calculateIncome();
+    </script>
+</body>
+</html>
